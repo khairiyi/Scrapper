@@ -5,6 +5,8 @@ from random import randint
 import requests
 import csv
 
+# new line
+
 page = requests.get('http://www.similarweb.com/website/fietsenwinkel.nl')
 tree0 = html.fromstring(page.content)
 
