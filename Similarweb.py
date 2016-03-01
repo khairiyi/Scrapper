@@ -5,8 +5,6 @@ from random import randint
 import requests
 import csv
 
-# new line
-
 page = requests.get('http://www.similarweb.com/website/fietsenwinkel.nl')
 tree0 = html.fromstring(page.content)
 
@@ -14,10 +12,16 @@ tree0 = html.fromstring(page.content)
 # Import website lists
 
 def website_list(filename):
-    with open(filename, 'rb') as f:
+    with open(''.join(['/Users/blackboyyi/Google Drive/Fastr/E-Commerce Index/Data/', filename]), 'rb') as f:
         reader = csv.reader(f)
         your_list = list(reader)
-    return your_list
+
+    your_list.remove(['name'])
+    cleaned = []
+    for website in your_list:
+        cleaned.append(website[0].split('//', 1)[1])
+
+    return cleaned
 
 
 # return a list of data from a single website
@@ -31,29 +35,53 @@ def get_data(website_name):
     # Metrics
 
 
-    categories = tree.xpath('//a[@class="rankingItem-subTitle is-link"]/text()')[2]
-    total_visits = \
+    categories = ', '.join(tree.xpath('//a[@class="rankingItem-subTitle is-link"]/text()'))
+    try:
+        total_visits = \
         tree.xpath('//span[@class="engagementInfo-value engagementInfo-value--large u-text-ellipsis"]/text()')[0]
+    except:
+        total_visits = 'Not Found'
     basic = tree.xpath('//span[@class="engagementInfo-value u-text-ellipsis"]/text()')
-    time_on_site = basic[0]
-    page_views = basic[1]
-    bounce_rate = basic[2]
+    try:
+        time_on_site = basic[0]
+        page_views = basic[1]
+        bounce_rate = basic[2]
+    except:
+        time_on_site = 'Not Found'
+        page_views = 'Not Found'
+        bounce_rate = 'Not Found'
     # List of 5 countries
-    country_name = tree.xpath('//a[@class="country-name country-name--link"]/text()')[0]
-    country1 = tree.xpath('//span[@class="traffic-share-value traffic-share-value--large"]/text()')
-    country_rest = tree.xpath('//span[@class="traffic-share-value "]/text()')
+    try:
+        country_name = tree.xpath('//a[@class="country-name country-name--link"]/text()')[0]
+        country1 = tree.xpath('//span[@class="traffic-share-value traffic-share-value--large"]/text()')
+        country_rest = tree.xpath('//span[@class="traffic-share-value "]/text()')
+    except:
+        country_name = 'Not Found'
+        country1 = 'Not Found'
+        country_rest = 'Not Found'
+
+
     # List of 5 percentages
     country_per = country1 + country_rest
     traffic_sources = tree.xpath('//div[@class="trafficSourcesChart-value"]/text()')
-    direct = traffic_sources[0]
-    referral = traffic_sources[1]
-    search = traffic_sources[2]
-    social = traffic_sources[3]
-    mail = traffic_sources[4]
-    display = traffic_sources[5]
+    try:
+        direct = traffic_sources[0]
+        referral = traffic_sources[1]
+        search = traffic_sources[2]
+        social = traffic_sources[3]
+        #mail = traffic_sources[4]
+        #display = traffic_sources[5]
+    except:
+        direct = 'Not Found'
+        referral = 'Not Found'
+        search = 'Not Found'
+        social = 'Not Found'
     search_2 = tree.xpath('//span[@class="searchPie-number"]/text()')
-    organic_search = search_2[0]
-    paid_search = search_2[1]
+    try:
+        organic_search = search_2[0]
+        paid_search = search_2[1]
+    except:
+        organic_search = 'Not Found'; paid_search = 'Not Found'
     social_names = tree.xpath('//a[@class="socialItem-title name link"]/text()')
     social_networks = tree.xpath('//div[@class="socialItem-value"]/text()')
 
@@ -123,7 +151,8 @@ def write_to_csv(combined_list, output_file):
 
 if __name__ == '__main__':
     #print get_data('fietsenwinkel.nl')
-    name_list = ['airbnb.com', 'bbc.com', 'CNN.com', 'fietsenwinkel.nl']
+    name_list = website_list('Fashion eCommerce.csv')
+    #name_list = ['airbnb.com', 'bbc.com', 'CNN.com', 'fietsenwinkel.nl']
     #name_list = website_list('')
     data_dict = get_results(name_list)
     write_to_csv(data_dict, 'data.csv')
