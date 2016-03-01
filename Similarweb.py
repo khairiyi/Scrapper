@@ -12,7 +12,7 @@ tree0 = html.fromstring(page.content)
 # Import website lists
 
 def website_list(filename):
-    with open(''.join(['/Users/blackboyyi/Google Drive/Fastr/E-Commerce Index/Data/', filename]), 'rb') as f:
+    with open(''.join(['/Users/E-Commerce Index/Data/', filename]), 'rb') as f:
         reader = csv.reader(f)
         your_list = list(reader)
 
